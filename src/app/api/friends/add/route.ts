@@ -1,7 +1,9 @@
 import { fetchRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth';
+import { db } from '@/lib/db';
 import { addFriendValidator } from '@/lib/validations/add-friend';
 import { getServerSession } from 'next-auth';
+import { z } from 'zod';
 
 export async function POST(req: Request) {
   try {
@@ -37,6 +39,10 @@ export async function POST(req: Request) {
       session.user.id
     )) as 0 | 1;
 
+    if (isAlreadyAdded) {
+      return new Response('Already added this user', { status: 400 });
+    }
+
     // check if user is already added
     const isAlreadyFriends = (await fetchRedis(
       'sismember',
@@ -49,6 +55,8 @@ export async function POST(req: Request) {
     }
 
     // valid request, send friend request
+
+    db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
     return new Response('OK');
   } catch (error) {
     if (error instanceof z.ZodError) {
