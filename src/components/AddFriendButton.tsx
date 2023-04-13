@@ -58,7 +58,7 @@ const AddFriendButton: FC<AddFriendButtonProps> = ({}) => {
         htmlFor='email'
         className='block text-sm font-medium leading-6 text-gray-900'
       >
-        Add friend by E-Mail
+        Add friend by Email
       </label>
 
       <div className='mt-2 flex gap-4'>
